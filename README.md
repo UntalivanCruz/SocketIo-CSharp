@@ -1,5 +1,7 @@
 # Demo Socket C#
 
+Proyecto Visual Studio 2019 .NET Framework 4.0
+
 _Este demo realiza una conexion por medio de Socket entre una aplicacion en C# a un servidor en Node_
 
 ### Instalación 🔧
