@@ -14,6 +14,11 @@ namespace WindowsFormsApp3
     public delegate void UpdateTextBoxMethod(string text);
     public partial class Form1 : Form
     {
+        public class socketData
+        {
+            public static Socket socket = IO.Socket("http://localhost");
+        }
+ 
         public Form1()
         {
             InitializeComponent();
@@ -23,29 +28,29 @@ namespace WindowsFormsApp3
         {
             CheckForIllegalCrossThreadCalls = false;
             this.comboBox1.SelectedIndex = 0;
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            var socket = IO.Socket("http://localhost");
-            socket.On(Socket.EVENT_CONNECT, () =>
+            socketData.socket.Connect();
+            socketData.socket.On(Socket.EVENT_CONNECT, () =>
             {
                 this.label2.Text = "Conectado";
-                string bascula = this.comboBox1.GetItemText(this.comboBox1.SelectedItem);
-                // Se selecciona la bascula para tomar lectura
-                socket.On(bascula, (data) =>
-                {
-                    UpdateValor(JsonConvert.SerializeObject(data));
-                    //socket.Disconnect(); // Es utilizado para cerrar la conexion con el socket
-                });
-
-                /* Se puede subscribir a mas conexiones
+               /* Se puede subscribir a mas conexiones
                 socket.On(bascula, (data) =>
                 {
                   ...data
                 }
                 */
-            });          
+            });
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            string bascula = this.comboBox1.GetItemText(this.comboBox1.SelectedItem);
+            // Se selecciona la bascula para tomar lectura
+            socketData.socket.On(bascula, (data) =>
+            {
+                UpdateValor(JsonConvert.SerializeObject(data));
+                //socket.Disconnect(); // Es utilizado para cerrar la conexion con el socket
+            });
+
         }
 
         private void UpdateValor(string text)
@@ -61,5 +66,17 @@ namespace WindowsFormsApp3
             }
         }
 
+        private void button2_Click(object sender, EventArgs e)
+        {
+            socketData.socket.Off();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            socketData.socket.Disconnect();
+            socketData.socket.Close();
+            this.label2.Text = "Desconectado";
+            socketData.socket = null;
+        }
     }
 }
